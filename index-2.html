@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Viewer</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Product Viewer</h2>
+
+    <table id="productTable">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Popularity</th>
+                <th>Subcategory</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table content will be inserted here dynamically -->
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fetch JSON data from the API
+            fetch('https://s3.amazonaws.com/open-to-cors/assignment.json')
+                .then(response => response.json())
+                .then(data => {
+                    // Check if 'products' property exists
+                    if (data && data.products) {
+                        // Convert the products object to an array
+                        const productArray = Object.values(data.products);
+
+                        // Sort the data by descending popularity
+                        productArray.sort((a, b) => b.popularity - a.popularity);
+
+                        // Create table rows dynamically
+                        const tableBody = document.querySelector('#productTable tbody');
+                        productArray.forEach(product => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${product.title}</td>
+                                <td>${product.price}</td>
+                                <td>${product.popularity}</td>
+                                <td>${product.subcategory || 'N/A'}</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    } else {
+                        console.error('Invalid data format:', data);
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+    </script>
+
+</body>
+</html>
